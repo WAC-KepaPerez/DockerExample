@@ -13,11 +13,10 @@ COPY mysite code
 WORKDIR /code
 
 EXPOSE 8000
-#COPY docker-entrypoint.sh docker-entrypoint.sh
-#ENTRYPOINT ["./docker-entrypoint.sh"]
+# entrypoint to run the django.sh file
+ENTRYPOINT ["mysite/django.sh"]
 
-
-ENTRYPOINT ["python", "mysite/manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+#ENTRYPOINT ["python", "mysite/manage.py"]
+#CMD ["runserver", "0.0.0.0:8000"]
 
 

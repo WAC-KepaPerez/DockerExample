@@ -12,7 +12,7 @@ def hello_world(request):
 
 class jsonMessage(APIView):
     def get(self, request, format=None):
-        return Response({'succes': 'hello'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'succes': 'hello 667'}, status=status.HTTP_400_BAD_REQUEST)
     
 class TodoDetail(APIView):
     def get(self, request):

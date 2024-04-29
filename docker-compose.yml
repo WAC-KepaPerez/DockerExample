@@ -1,22 +1,42 @@
 version: "3.9"
 services:
-  web:
-    container_name: web-container
-    build: .
-    volumes:
-      - .:/code 
-    ports: 
-      - "8000:8000"
-    links:
-      - bd
+
   bd:
     image: mysql
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=12345
-      - MYSQL_DATABASE=todos
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=12345
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}  # Using the same password for simplicity
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s  # Gives time for the service to start up before the first health check
+    volumes:
+      - db-data:/var/lib/mysql
 
-
+  web:
+    container_name: web-container
+    build: .
+    volumes:
+      - .:/code 
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_NAME=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
+    ports: 
+      - "8000:8000"
+    depends_on:
+      bd:
+        condition: service_healthy 
+volumes:
+  db-data:
